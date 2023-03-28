@@ -1,5 +1,4 @@
 import time
-import random
 import board
 import adafruit_dotstar as dotstar
 
@@ -10,15 +9,16 @@ dots = dotstar.Dotstar(board.SCK, board.MOSI, 12, brightness=0.2, auto_write = T
 # https://docs.circuitpython.org/projects/dotstar/en/latest/api.html#adafruit_dotstar.DotStar.fill
 # (R,G,B,brightness)
 # dots.fill((255, 255, 255, 0.1))
+# dots[#] = (255, 255, 255)
 
-# FOR TESTING
-L = ["370\n", "1, 5, 0.5, 1.34\n", "2, 3, 0.25, 1.4\n", "3, 4, 0.75, 1.5\n"]
+# # FOR TESTING
+# L = ["370\n", "1, 5, 0.5, 1.34\n", "2, 3, 0.25, 1.4\n", "3, 4, 0.75, 1.5\n"]
 
-# writing to file
-file1 = open('song.txt', 'w')
-file1.writelines(L)
-file1.close()
-# END TESTING
+# # writing to file
+# file1 = open('song.txt', 'w')
+# file1.writelines(L)
+# file1.close()
+# # END TESTING
 
 # takes string number and returns rgb tuple value
 def getColor(string):
@@ -36,8 +36,8 @@ def getColor(string):
 # read the song txt file
 song = open('song.txt', 'r')
 Lines = song.readlines()
-# the queue of song data lines
-rawQueue = []
+# the queue of notes
+queue = []
 
 # takes the first line as total song time in seconds
 songLength = Lines.pop(0)
@@ -45,23 +45,17 @@ songLength = Lines.pop(0)
 # for every line in the file
 for line in Lines:
     # split the line by the commas
-    sep = line.split(',')
+    note = line.split(',')
     # strip spaces/breaks from each part
-    for i in range(len(sep)):
-        sep[i] = sep[i].strip()
-    # add each line/note to the rawQueue
-    rawQueue.append(sep)
-
-# the queue of notes
-queue = []
-# for each note in the queue
-for note in rawQueue:
+    for i in range(len(note)):
+        note[i] = note[i].strip()
+    
     # process its relevant values
     rgb = getColor(int(note[0]))
     fret = note[1]
     length = note[2]
     # and add them as a tuple to the queue
-    queue.append((rgb,fret,length))
+    queue.append((rgb, fret, length))
 
 # note counter
 nc = 0
