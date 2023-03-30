@@ -12,7 +12,7 @@ dots = dotstar.DotStar(board.SCK, board.MOSI, 12, brightness=0.2, auto_write = T
 # dots[#] = (255, 255, 255)
 
 # # FOR TESTING
-# L = ["370\n", "1, 5, 1, 1.34\n", "2, 3, 2, 1.4\n", "3, 4, 1, 1.5\n"]
+# L = ["370\n", "1, 5, 1.5, 1.34\n", "2, 3, 2.2, 1.4\n", "3, 4, 1, 1.5\n"]
 
 # # writing to file
 # file1 = open('song.txt', 'w')
@@ -77,7 +77,7 @@ while(stillPlaying):
     dots[int(curNote[1])] = curNote[0]
 
     # wait amount of time note lasts for (in seconds)
-    time.sleep(int(curNote[2]))
+    time.sleep(float(curNote[2]))
 
     # increment note count
     nc += 1
