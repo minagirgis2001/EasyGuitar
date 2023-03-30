@@ -3,7 +3,7 @@ import board
 import adafruit_dotstar as dotstar
 
 # number of LEDs, baudrate = clock rate
-dots = dotstar.Dotstar(board.SCK, board.MOSI, 12, brightness=0.2, auto_write = True)#, baudrate = 4000000)
+dots = dotstar.DotStar(board.SCK, board.MOSI, 12, brightness=0.2, auto_write = True)#, baudrate = 4000000)
 
 # EXAMPLE CODE:
 # https://docs.circuitpython.org/projects/dotstar/en/latest/api.html#adafruit_dotstar.DotStar.fill
@@ -12,7 +12,7 @@ dots = dotstar.Dotstar(board.SCK, board.MOSI, 12, brightness=0.2, auto_write = T
 # dots[#] = (255, 255, 255)
 
 # # FOR TESTING
-# L = ["370\n", "1, 5, 0.5, 1.34\n", "2, 3, 0.25, 1.4\n", "3, 4, 0.75, 1.5\n"]
+# L = ["370\n", "1, 5, 1, 1.34\n", "2, 3, 2, 1.4\n", "3, 4, 1, 1.5\n"]
 
 # # writing to file
 # file1 = open('song.txt', 'w')
