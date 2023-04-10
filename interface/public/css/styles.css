@@ -1,0 +1,41 @@
+
+.rainbow-lr {
+    background: linear-gradient(to right, red, orange , yellow, green, cyan, blue, violet);
+    color:transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-animation: glow 1s ease-in-out infinite alternate;
+    -moz-animation: glow 1s ease-in-out infinite alternate;
+    animation: glow 1s ease-in-out infinite alternate;
+    
+    
+  }
+
+  .glow {
+    font-size: 80px;
+    color: #fff;
+    text-align: center;
+    -webkit-animation: glow 1s ease-in-out infinite alternate;
+    -moz-animation: glow 1s ease-in-out infinite alternate;
+    animation: glow 1s ease-in-out infinite alternate;
+  }
+  
+  @-webkit-keyframes glow {
+    from {
+      text-shadow: 0 0 10px rgb(255, 0, 0), 0 0 20px orange, 0 0 30px yellow, 0 0 40px green, 0 0 50px cyan, 0 0 60px blue, 0 0 70px violet;
+    }
+    to {
+      text-shadow: 0 0 20px red, 0 0 30px orange, 0 0 40px yellow, 0 0 50px green, 0 0 60px cyan, 0 0 70px blue, 0 0 80px violet;
+    }
+  }
+  @keyframes glow {
+    from {
+      text-shadow: 0 0 10px rgb(255, 0, 0), 0 0 20px orange, 0 0 30px yellow, 0 0 40px green, 0 0 50px cyan, 0 0 60px blue, 0 0 70px violet;
+    }
+    to {
+      text-shadow: 0 0 20px red, 0 0 30px orange, 0 0 40px yellow, 0 0 50px green, 0 0 60px cyan, 0 0 70px blue, 0 0 80px violet;
+    }
+  }
+
+
+  
