@@ -147,7 +147,8 @@ if __name__ == "__main__":
         for note, pitch, start_time in notes_and_times:
             string, fret = note_to_fret_and_string(note)
             if string is not None and fret is not None:
-                txt_file.write(f"Note: {note}, Frequency: {pitch:.2f} Hz, Start Time: {start_time:.2f}s, String: {string}, Fret: {fret}\n")
+                #txt_file.write(f"Note: {note}, Frequency: {pitch:.2f} Hz, Start Time: {start_time:.2f}s, String: {string}, Fret: {fret}\n")
+                txt_file.write(f"{string}, {fret}, {start_time:.2f}\n")
                 print(f"Note: {note}, Frequency: {pitch:.2f} Hz, Start Time: {start_time:.2f}s, String: {string}, Fret: {fret}")
             else:
                 print(f"Note: {note} cannot be played on a standard four-string bass guitar")
