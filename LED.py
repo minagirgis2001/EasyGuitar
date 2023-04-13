@@ -50,7 +50,7 @@ for line in Lines:
     for i in range(len(note)):
         note[i] = note[i].strip()
     
-    # process its relevant values
+    # process its relevant values: String, Fret, Length
     rgb = getColor(int(note[0]))
     #fret = note[1]
     fret = 4*(note[1]-1) + (note[0]-1)
@@ -75,7 +75,7 @@ while(stillPlaying):
     dots.fill((0, 0, 0, 0.1))
 
     # light up the correct LED with the correct color
-    dots[int(curNote[1])] = curNote[0]
+    dots[int(curNote[1])+4] = curNote[0]
 
     # wait amount of time note lasts for (in seconds)
     time.sleep(float(curNote[2]))
