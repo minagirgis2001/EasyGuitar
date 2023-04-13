@@ -3,7 +3,7 @@ import board
 import adafruit_dotstar as dotstar
 
 # number of LEDs, baudrate = clock rate
-dots = dotstar.DotStar(board.SCK, board.MOSI, 12, brightness=0.2, auto_write = True)#, baudrate = 4000000)
+dots = dotstar.DotStar(board.SCK, board.MOSI, 48, brightness=0.2, auto_write = True)#, baudrate = 4000000)
 
 # EXAMPLE CODE:
 # https://docs.circuitpython.org/projects/dotstar/en/latest/api.html#adafruit_dotstar.DotStar.fill
