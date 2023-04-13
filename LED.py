@@ -53,7 +53,7 @@ for line in Lines:
     # process its relevant values: String, Fret, Length
     rgb = getColor(int(note[0]))
     #fret = note[1]
-    fret = 4*(note[1]-1) + (note[0]-1)
+    fret = 4*(int(note[1])-1) + (int(note[0])-1)
     length = note[2]
     # and add them as a tuple to the queue
     queue.append((rgb, fret, length))
