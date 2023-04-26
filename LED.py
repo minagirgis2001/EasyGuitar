@@ -5,21 +5,6 @@ import adafruit_dotstar as dotstar
 # number of LEDs, baudrate = clock rate
 dots = dotstar.DotStar(board.SCK, board.MOSI, 52, brightness=0.2, auto_write = True)#, baudrate = 4000000)
 
-# EXAMPLE CODE:
-# https://docs.circuitpython.org/projects/dotstar/en/latest/api.html#adafruit_dotstar.DotStar.fill
-# (R,G,B,brightness)
-# dots.fill((255, 255, 255, 0.1))
-# dots[#] = (255, 255, 255)
-
-# # FOR TESTING
-# L = ["370\n", "1, 5, 1.5, 1.34\n", "2, 3, 2.2, 1.4\n", "3, 4, 1, 1.5\n"]
-
-# # writing to file
-# file1 = open('song.txt', 'w')
-# file1.writelines(L)
-# file1.close()
-# # END TESTING
-
 # takes string number and returns rgb tuple value
 def getColor(string):
     if(string == 1):
@@ -33,6 +18,60 @@ def getColor(string):
     else:
         return (0,0,0)
 
+# Reverses fret #
+def getFret(x):
+    if(x == 1):
+        return 12
+    elif(x == 2):
+        return 11
+    elif(x == 3):
+        return 10
+    elif(x == 4):
+        return 9
+    elif(x == 5):
+        return 8
+    elif(x == 6):
+        return 7
+    elif(x == 7):
+        return 6
+    elif(x == 8):
+        return 5
+    elif(x == 9):
+        return 4
+    elif(x == 10):
+        return 3
+    elif(x == 11):
+        return 2
+    else:
+        return 1
+
+# Checks if the user paused the song
+def isPaused():
+    #MINA <---------------------------------------------------------------------------
+    return False
+
+# Checks which speed is selected
+def checkSpeed():
+    # if speed is 2x
+    if (ping2x):  # MINA <---------------------------------------------------------------------------
+        return 2
+    # if speed is 1.5x
+    if (ping15):  # MINA <---------------------------------------------------------------------------
+        return 1.5
+    # if speed is 0.5x
+    if (ping5):  # MINA <---------------------------------------------------------------------------
+        return 0.5
+    # if speed is 0.25x
+    if (ping25):  # MINA <---------------------------------------------------------------------------
+        return 0.25
+    # default of 1x speed
+    return 1
+
+# Checks if the song is on loop
+def isLooped():
+    # MINA <---------------------------------------------------------------------------
+    return False
+
 # read the song txt file
 song = open('song.txt', 'r')
 Lines = song.readlines()
@@ -40,7 +79,7 @@ Lines = song.readlines()
 queue = []
 
 # takes the first line as total song time in seconds
-songLength = Lines.pop(0)
+#songLength = Lines.pop(0)
 
 # for every line in the file
 for line in Lines:
@@ -53,32 +92,52 @@ for line in Lines:
     # process its relevant values: String, Fret, Length
     rgb = getColor(int(note[0]))
     #fret = note[1]
-    fret = 4*(int(note[1])-1) + (int(note[0])-1)
+    fret = 4*(getFret(int(note[1]))-1) + (int(note[0])-1)
     length = note[2]
     # and add them as a tuple to the queue
     queue.append((rgb, fret, length))
 
 # note counter
 nc = 0
-stillPlaying = True
+notFinished = True
 
 # main loop to turn on the LEDs
-while(stillPlaying):
-    # if we are out of notes, exit while loop
-    if(nc == len(queue)):
-        stillPlaying = False
-        break
-    
-    curNote = queue[nc]
-    print(curNote)
-    # turn off all LEDs
-    dots.fill((0, 0, 0, 0.1))
+while(notFinished):
+    # Ping web server to see if paused
+    paused = isPaused()
+    # while the song is not paused, play a note
+    while not paused:
+        # Checks user's selected speed
+        speed = checkSpeed()
 
-    # light up the correct LED with the correct color
-    dots[int(curNote[1])+4] = curNote[0]
+        # if we are out of notes, exit while loop
+        if(nc == len(queue)):
+            # if looping, go back to beginning
+            if (isLooped()):
+                nc = 0
+            # otherwise exit loop
+            else:
+                notFinished = False
+                paused = True
+                break
 
-    # wait amount of time note lasts for (in seconds)
-    time.sleep(float(curNote[2]))
+        #grab the current note
+        curNote = queue[nc]
+        print(curNote)
+        # turn off all LEDs
+        dots.fill((0, 0, 0, 0.1))
 
-    # increment note count
-    nc += 1
+        # light up the correct LED with the correct color, [1] = fret # with +4 offset, [0] is rgb value
+        dots[int(curNote[1])+4] = curNote[0]
+
+        # wait amount of time note lasts for (in seconds) times the chosen speed
+        time.sleep(float(curNote[2])*speed)
+
+        #turn off all LEDs
+        dots.fill((0, 0, 0, 0.1))
+
+        # increment note count
+        nc += 1
+
+        #Ping web server to see if paused
+        paused = isPaused()
