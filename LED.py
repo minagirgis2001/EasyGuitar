@@ -52,20 +52,8 @@ def isPaused():
 
 # Checks which speed is selected
 def checkSpeed():
-    # if speed is 2x
-    if (ping2x):  # MINA <---------------------------------------------------------------------------
-        return 2
-    # if speed is 1.5x
-    if (ping15):  # MINA <---------------------------------------------------------------------------
-        return 1.5
-    # if speed is 0.5x
-    if (ping5):  # MINA <---------------------------------------------------------------------------
-        return 0.5
-    # if speed is 0.25x
-    if (ping25):  # MINA <---------------------------------------------------------------------------
-        return 0.25
-    # default of 1x speed
-    return 1
+    pingSpeed = 1   # MINA <---------------------------------------------------------------------------
+    return pingSpeed
 
 # Checks if the song is on loop
 def isLooped():
