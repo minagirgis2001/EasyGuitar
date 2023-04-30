@@ -17,6 +17,13 @@
             <a class="p2 btn btn-danger text-light text-decoration-none " href="/upload">Upload</a>
             <br>
             <a class="p2 btn btn-success text-light text-decoration-none" href="/Settings">Settings</a>
+            <form ref='uploadForm' 
+            id='uploadForm' 
+            action='http://localhost:5000/' 
+            method='post' 
+            encType="multipart/form-data">
+                <input type="submit">
+            </form>
         </div>
         
     </div>

@@ -4,6 +4,10 @@ import librosa
 from scipy.io import wavfile
 from scipy.signal import butter, filtfilt
 import aubio
+from subprocess import call
+import os
+
+
 def butter_lowpass(cutoff, fs, order=5):
     nyq = 0.5 * fs
     normal_cutoff = cutoff / nyq
@@ -72,30 +76,37 @@ def extract_bass(input_wav, output_wav, cutoff_frequency=250, mask_threshold=0.2
 
 #     return notes_and_times
 
-def extract_notes_and_times(wav_file, hop_length=512, sr=None):
+def extract_notes_per_second(wav_file, hop_length=512, sr=None):
     # Load the bass WAV file
     y, sr = librosa.load(wav_file, sr=sr)
 
-    # Instantiate the YIN pitch detection algorithm
-    pitch_o = aubio.pitch("yin", 2 * hop_length, hop_length, sr)
-    
-    # Detect onsets
+    # Detect pitch and onset
+    pitches, magnitudes = librosa.piptrack(y=y, sr=sr, hop_length=hop_length)
     onsets = librosa.onset.onset_detect(y=y, sr=sr, hop_length=hop_length)
 
     # Extract notes, frequencies, and their start times
     notes_and_times = []
+    notes_per_second = []
     for onset in onsets:
-        # Get the pitch at the onset
-        pitch = pitch_o(y[onset * hop_length:(onset + 1) * hop_length])[0]
+        idx = magnitudes[:, onset].argmax()
+        pitch = pitches[idx, onset]
         if pitch > 0:
-            # Step down the frequency an octave
-            pitch_octave_down = pitch / 2
-            note = librosa.hz_to_note(pitch_octave_down)
+            note = librosa.hz_to_note(pitch)
             start_time = onset * hop_length / sr
-            notes_and_times.append((note, pitch_octave_down, start_time))
+            notes_and_times.append((note, pitch, start_time))
+            notes_per_second.append((start_time, note))
 
-    return notes_and_times
+    avg_notes_per_second = []
+    start_time = 0
+    for i in range(len(notes_per_second)):
+        time, note = notes_per_second[i]
+        if time - start_time >= 1:
+            notes_for_second = [n for t, n in notes_per_second if start_time <= t < time]
+            avg_note = max(set(notes_for_second), key=notes_for_second.count)
+            avg_notes_per_second.append((start_time, avg_note))
+            start_time = time
 
+    return avg_notes_per_second
 
 def estimate_key(wav_file, sr=None, hop_length=512):
     # Load the audio file
@@ -116,7 +127,7 @@ def estimate_key(wav_file, sr=None, hop_length=512):
 
     return key
 def note_to_fret_and_string(note):
-    bass_tuning = ['B0', 'A1', 'D2', 'G2']
+    bass_tuning = ['E1', 'A1', 'D2', 'G2']
     frets_per_string = 12
 
     note_name, octave = note[:-1], int(note[-1])
@@ -128,27 +139,41 @@ def note_to_fret_and_string(note):
 
     return None, None
 
+
+
 if __name__ == "__main__":
-    input_wav = "./bass.wav"
-    output_wav = "output_bass.wav"
+    current_directory = os.getcwd()
+    input_wav = current_directory +"/../song.wav"
+    output_wav = current_directory +"/../output_bass.wav"
     cutoff_frequency = 250  # Adjust this value to include the desired range of bass frequencies
     mask_threshold = 0.05
     extract_bass(input_wav, output_wav, cutoff_frequency, mask_threshold)
-    notes_and_times = extract_notes_and_times(output_wav)
+    avg_notes_per_second = extract_notes_per_second(output_wav)
     original_key = estimate_key(input_wav)
     bass_key = estimate_key(output_wav)
 
     print(f"Original Estimated key: {original_key}")
     print(f"Bass Estimated key: {bass_key}")
-    for note, pitch, start_time in notes_and_times:
-        print(f"Note: {note}, Frequency: {pitch:.2f} Hz, Start Time: {start_time:.2f}s")
+    for start_time, avg_note in avg_notes_per_second:
+        pass
+        # print(f"Average note: {avg_note}, Start Time: {start_time:.2f}s")
 
-    with open('output.txt', 'w', encoding='utf-8') as txt_file:
-        for note, pitch, start_time in notes_and_times:
+    with open(current_directory +'/../song.txt', 'w', encoding='utf-8') as txt_file: 
+        for i in range(len(avg_notes_per_second)):
+            note = avg_notes_per_second[i][1] 
+            start_time = avg_notes_per_second[i][0]
+            if i + 1 < len(avg_notes_per_second):
+                next_start_time = avg_notes_per_second[i+1][0]
+                print(next_start_time)
+                note_length = float(next_start_time) - float(start_time)
+                
+            else:
+                note_length = 0
             string, fret = note_to_fret_and_string(note)
             if string is not None and fret is not None:
-                #txt_file.write(f"Note: {note}, Frequency: {pitch:.2f} Hz, Start Time: {start_time:.2f}s, String: {string}, Fret: {fret}\n")
-                txt_file.write(f"{string}, {fret}, {start_time:.2f}\n")
-                print(f"Note: {note}, Frequency: {pitch:.2f} Hz, Start Time: {start_time:.2f}s, String: {string}, Fret: {fret}")
+                txt_file.write(f"{string}, {fret}, {note_length:.2f}, {start_time:.2f}\n")
+                # print(f"String: {string}, Fret: {fret}, Note Length: {note_length:.2f}, Start Time: {start_time:.2f}")
             else:
-                print(f"Note: {note} cannot be played on a standard four-string bass guitar")
+                pass
+                # print(f"Note: {note} cannot be played on a standard four-string bass guitar")
+    call(["python", current_directory +"/../LED.py",])

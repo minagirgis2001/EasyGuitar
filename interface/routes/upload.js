@@ -1,6 +1,8 @@
 const express = require("express")
 const router = express.Router()
 const fileUpload = require('express-fileupload')
+const { spawn } = require('child_process');
+
 router.use(fileUpload())
 router.get("/",(req,res)=>{
     res.render('upload', { title: 'Hey', message: 'Hello there!' })
@@ -16,14 +18,17 @@ router.post('/', (req, res) =>{
   
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
     sampleFile = req.files.song;
-    uploadPath = __dirname +"/song/" + sampleFile.name;
-  
+    sampleFile.name = "song.wav"
+    uploadPath = __dirname + "/../../" + sampleFile.name;
+    console.log(uploadPath);
     // Use the mv() method to place the file somewhere on your server
     sampleFile.mv(uploadPath, function(err) {
-      if (err)
+      if (err){
         return res.status(500).send(err);
-  
-      res.send('File uploaded!');
+
+      }
+      res.redirect("/")
+    })
+
     });
-  });
 module.exports=router
