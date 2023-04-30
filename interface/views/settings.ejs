@@ -11,9 +11,33 @@
 <body style="background-color: #000000;">
     <h5 class="text-center h5"><span class="glow rainbow-lr h1">EasyGuitar <br><br>Adjust settings for your song</span></h5>
     <br>
-    <div class="d-flex flex-column justify-content-center align-items-center">
-        <a class="p2 btn btn-danger text-light text-decoration-none " href="/upload">TODO: implement settings</a>
-
+    <div class=" text-white d-flex flex-column justify-content-center align-items-center">
+        <form action='http://localhost:5000/settings/isPaused' method="post">
+            <label>
+              <input type="checkbox" name="isPaused" value="true"> isPaused
+            </label>
+            <br>
+            <button type="submit">Submit</button>
+          </form>
+          <form method="post" action="http://localhost:5000/settings/speed">
+            <label>
+              Speed:
+              <select name="speed">
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1" selected>1x</option>
+              </select>
+            </label>
+            <br>
+            <button type="submit">Submit</button>
+          </form>
+          <form action='http://localhost:5000/settings/isLooped' method="post">
+            <label>
+              <input type="checkbox" name="isLooped" value="true"> islooped
+            </label>
+            <br>
+            <button type="submit">Submit</button>
+          </form>
     </div>
 </body>
 </html>

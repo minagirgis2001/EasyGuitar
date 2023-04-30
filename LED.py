@@ -1,9 +1,11 @@
 import time
 import board
 import adafruit_dotstar as dotstar
-
+import re
+import requests
+import json
 # number of LEDs, baudrate = clock rate
-dots = dotstar.DotStar(board.SCK, board.MOSI, 52, brightness=0.2, auto_write = True)#, baudrate = 4000000)
+# dots = dotstar.DotStar(board.SCK, board.MOSI, 52, brightness=0.2, auto_write = True)#, baudrate = 4000000)
 
 # takes string number and returns rgb tuple value
 def getColor(string):
@@ -47,18 +49,53 @@ def getFret(x):
 
 # Checks if the user paused the song
 def isPaused():
+
     #MINA <---------------------------------------------------------------------------
-    return False
+    time.sleep(.01)
+    response = requests.get('http://localhost:5000/settings/isPaused')
+    print(response)
+    response_json = response.text
+    response_dict = json.loads(response_json)
+    print(response.text)
+    print(response_dict) 
+    if((response_dict!= None or response_dict !={}) and response_dict== "true"):
+        return True
+    else:
+        return False
+    
 
 # Checks which speed is selected
 def checkSpeed():
-    pingSpeed = 1   # MINA <---------------------------------------------------------------------------
-    return pingSpeed
+    response = requests.get('http://localhost:5000/settings/speed')
+    print(response.text)
+    # match = re.search(r'\d+', response.text)
+    match = re.search(r'\d+\.\d+', response.text)
+    if match:
+        first_float = float(match.group())
+        print(first_float)  # Output: 1.23
+        pingSpeed = float(first_float)  # Output: 123  
+        return pingSpeed
+    return 1
+ # MINA <---------------------------------------------------------------------------
+
+    # if the response is not empty take response.text and remove the rest of the string except the float and convert it to a float 
+
+    
 
 # Checks if the song is on loop
 def isLooped():
     # MINA <---------------------------------------------------------------------------
-    return False
+    time.sleep(.02)
+    response = requests.get('http://localhost:5000/settings/isLooped')
+    print(response)
+    response_json = response.text
+    response_dict = json.loads(response_json)
+    print(response.text)
+    print(response_dict) 
+    if((response_dict == {} or response_dict == None)):
+        return False
+    else:
+        return True
 
 # read the song txt file
 song = open('song.txt', 'r')
@@ -79,7 +116,7 @@ for line in Lines:
     
     # process its relevant values: String, Fret, Length
     rgb = getColor(int(note[0]))
-    #fret = note[1]
+    # fret = note[1]
     fret = 4*(getFret(int(note[1]))-1) + (int(note[0])-1)
     length = note[2]
     # and add them as a tuple to the queue
@@ -115,11 +152,11 @@ while(notFinished):
         # turn off all LEDs
         dots.fill((0, 0, 0, 0.1))
 
-        # light up the correct LED with the correct color, [1] = fret # with +4 offset, [0] is rgb value
+        # # light up the correct LED with the correct color, [1] = fret # with +4 offset, [0] is rgb value
         dots[int(curNote[1])+4] = curNote[0]
 
-        # wait amount of time note lasts for (in seconds) times the chosen speed
-        time.sleep(float(curNote[2])*speed)
+        # # wait amount of time note lasts for (in seconds) times the chosen speed
+        time.sleep(float(curNote[2])*speed) # type: ignore
 
         #turn off all LEDs
         dots.fill((0, 0, 0, 0.1))
