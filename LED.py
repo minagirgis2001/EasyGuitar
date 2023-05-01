@@ -9,13 +9,13 @@ dots = dotstar.DotStar(board.SCK, board.MOSI, 52, brightness=0.2, auto_write = T
 
 # takes string number and returns rgb tuple value
 def getColor(string):
-    if(string == 1):
+    if(string == 4):
         return (255, 0, 0)      # red
-    elif(string == 2):
-        return (255, 255, 0)    # yellow
     elif(string == 3):
+        return (255, 255, 0)    # yellow
+    elif(string == 2):
         return (0, 0, 255)      # blue
-    elif (string == 4):
+    elif (string == 1):
         return (255, 128, 0)    # orange
     else:
         return (0,0,0)
