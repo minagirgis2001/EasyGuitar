@@ -156,7 +156,7 @@ while(notFinished):
         dots[int(curNote[1])+4] = curNote[0]
 
         # # wait amount of time note lasts for (in seconds) times the chosen speed
-        time.sleep(float(curNote[2])*speed) # type: ignore
+        time.sleep(float(curNote[2])/speed) # type: ignore
 
         #turn off all LEDs
         dots.fill((0, 0, 0, 0.1))
